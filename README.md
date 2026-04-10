@@ -86,7 +86,7 @@ pip install streamlit altair pandas pytest
 
 # Run the dashboard (from streamlit_app/)
 cd streamlit_app
-streamlit run app.py
+streamlit run 1_market_overview.py
 
 # Run tests (from project root)
 pytest
