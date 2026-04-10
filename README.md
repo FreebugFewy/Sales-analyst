@@ -4,7 +4,7 @@ This project models the pricing strategy analytics work performed by Visa's Glob
 
 ## Live Dashboard
 
-**URL:** https://visa-pricing-analyst-eahxvbuodqjhohv4pikbct.streamlit.app/
+**URL:** https://visa-pricing-analyst-k6dawusfsc9vetupcdqhnw.streamlit.app/
 
 ## Job Posting
 
