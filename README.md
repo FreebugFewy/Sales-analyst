@@ -21,7 +21,7 @@ This project directly demonstrates the role's core requirements: rigorous quanti
 | Data Processing | Pandas |
 | Financial Model | Python pure function (`compute_deal_pnl`) |
 | Visualisation | Altair |
-| Dashboard | Streamlit (two-page multipage app) |
+| Dashboard | Streamlit (three-page multipage app) |
 | Testing | pytest (8 unit tests) |
 | Deployment | Streamlit Community Cloud |
 
@@ -33,6 +33,7 @@ flowchart TD
 
     CSV -->|"@st.cache_data"| P1["1_market_overview.py\n📊 Market Overview\nKPI cards · Volume trend\nInterchange · Acceptance · Revenue"]
     CSV -->|"@st.cache_data"| P2["pages/2_deal_simulator.py\n🤝 Deal Simulator"]
+    CSV -->|"ecommerce_merchants.csv"| P3["pages/3_ecommerce_targets.py\n🎯 E-commerce Targets"]
 
     P2 --> INPUTS["User Inputs\nMerchant · Category · Region\nVolume · Discount · Growth · Term"]
     INPUTS --> FN["compute_deal_pnl()\nutils/deal_pnl.py\nPure function — no Streamlit dependency"]
@@ -42,6 +43,11 @@ flowchart TD
     FN --> OUT4["Verdict Banner\nFavorable · Conditional · Requires Approval"]
 
     P2 -->|"derives baseline\ninterchange rate"| CSV
+
+    P3 --> SCORE["compute_opportunity_score()\nutils/opportunity_score.py\nPure function — no Streamlit dependency"]
+    SCORE --> OUT5["Ranked Merchant Table\nHigh · Medium · Low priority"]
+    SCORE --> OUT6["Opportunity Score Bar Chart"]
+    SCORE --> OUT7["Volume vs Acceptance Rate Scatter"]
 ```
 
 ## Data Schema
@@ -122,7 +128,8 @@ python generate_data.py
     │   │   └── ecommerce_merchants.csv
     │   └── generate_data.py         # Synthetic data generator
     ├── tests/
-    │   └── test_deal_pnl.py         # 8 unit tests for the financial model
+    │   ├── test_deal_pnl.py              # 8 unit tests for the financial model
+    │   └── test_opportunity_score.py     # 7 unit tests for the opportunity score function
     ├── docs/
     │   ├── proposal.md              # Project proposal
     │   └── pipeline-diagram.md      # Data flow diagram
