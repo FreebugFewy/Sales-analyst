@@ -15,7 +15,8 @@ def test_zero_volume_returns_zero():
 
 def test_perfect_acceptance_sets_network_gap_to_one():
     # network_gap_multiplier = 2.0 - 1.0 = 1.0
-    # score = volume * avg_txn * rate * (1 + growth) * 1.0
+    # score = gross_revenue * growth_multiplier * network_gap_multiplier
+    #       = (annual_volume_m * avg_transaction_usd * interchange_rate) * 1.0 * 1.0
     score = compute_opportunity_score(
         annual_volume_m=10.0,
         avg_transaction_usd=100.0,
@@ -62,3 +63,14 @@ def test_lower_acceptance_rate_produces_higher_score():
     low_gap = compute_opportunity_score(acceptance_rate=0.95, **base_kwargs)
     high_gap = compute_opportunity_score(acceptance_rate=0.82, **base_kwargs)
     assert high_gap > low_gap
+
+
+def test_zero_interchange_rate_returns_zero():
+    score = compute_opportunity_score(
+        annual_volume_m=50.0,
+        avg_transaction_usd=100.0,
+        interchange_rate=0.0,
+        acceptance_rate=0.90,
+        yoy_growth_rate=0.10,
+    )
+    assert score == pytest.approx(0.0)
