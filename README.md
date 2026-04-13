@@ -76,6 +76,12 @@ The dataset (`streamlit_app/data/visa_pricing_metrics.csv`) has 2,160 rows — o
 
 **Recommendation:** Target E-commerce deal negotiations with volume-for-discount structures first — the combination of high interchange headroom (2.4%) and strong digital growth trajectory means larger deals can absorb meaningful discounts while remaining NPV-positive. Use the Deal Simulator to model the exact break-even volume before committing to a discount tier.
 
+- **Who to target:** Priority targets are high-volume merchants with below-average acceptance rates — they have the most to gain from network improvements, which creates negotiating leverage for volume commitments in exchange for a discount. Secondary targets are mid-volume merchants in underpenetrated regions (Middle East & Africa, Latin America) where acceptance infrastructure gaps create room for structured deals.
+
+- **Deal structure:** Lead with a 10–15% discount off the 2.4% standard rate in exchange for a minimum annual volume commitment. At 10% discount, a 50M transaction/year merchant needs only 5.6M additional transactions to break even — a realistic uplift ask for a growing e-commerce player. Avoid discounts above 20% without a 3–5 year term to ensure NPV recovery.
+
+- **Risks:** E-commerce interchange premiums depend on fraud rates staying controlled — any deterioration in authorization rates erodes the margin that makes the discount viable. Deal terms should include acceptance rate floor clauses. Volume commitments should be measured on net approved transactions, not gross attempts.
+
 ## Setup & Reproduction
 
 **Requirements:** Python 3.10+
@@ -105,12 +111,15 @@ python generate_data.py
     ├── streamlit_app/
     │   ├── 1_market_overview.py     # Page 1: Market Overview dashboard
     │   ├── pages/
-    │   │   └── 2_deal_simulator.py  # Page 2: Deal Simulator
+    │   │   ├── 2_deal_simulator.py       # Page 2: Deal Simulator
+    │   │   └── 3_ecommerce_targets.py    # Page 3: E-commerce Merchant Targets
     │   ├── utils/
-    │   │   ├── data_loader.py       # Shared cached CSV loader
-    │   │   └── deal_pnl.py          # Core financial model (pure function)
+    │   │   ├── data_loader.py            # Shared cached CSV loader
+    │   │   ├── deal_pnl.py               # Core financial model (pure function)
+    │   │   └── opportunity_score.py      # Merchant opportunity scoring (pure function)
     │   ├── data/
-    │   │   └── visa_pricing_metrics.csv
+    │   │   ├── visa_pricing_metrics.csv
+    │   │   └── ecommerce_merchants.csv
     │   └── generate_data.py         # Synthetic data generator
     ├── tests/
     │   └── test_deal_pnl.py         # 8 unit tests for the financial model
