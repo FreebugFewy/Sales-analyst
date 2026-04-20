@@ -4,7 +4,7 @@ This project models the operational analytics work performed by a Business Analy
 
 ## Live Dashboard
 
-**URL:** *(deploy to Streamlit Community Cloud and paste URL here)*
+**URL:** https://crypto-analyst-jzvweqygfjactyyhdbv8bo.streamlit.app/
 
 ## Job Posting
 
