@@ -209,3 +209,17 @@ __marimo__/
 # Course reference files (not part of submission)
 docs/project-requirements.md
 docs/proposal-template.md
+
+# Claude Code local settings
+.claude/
+
+# Job application docs (PDFs, screenshots, internal working files)
+docs/*.pdf
+docs/*.png
+docs/*.md
+docs/resume*.md
+
+# Keep spec, plan, and pipeline diagram
+!docs/superpowers/
+!docs/superpowers/**
+!docs/pipeline-diagram.md
