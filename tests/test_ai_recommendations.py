@@ -63,3 +63,11 @@ def test_next_best_action_non_empty_for_every_flag():
     flags = compute_ai_recommendations(df)
     assert len(flags) == 2
     assert all(len(f["next_best_action"]) > 0 for f in flags)
+
+
+def test_onboarding_over_14_days_escalates_to_critical():
+    df = pd.DataFrame([_deal("VAS-0008", "Tap-to-Phone", "ISOs", "Paysafe", "Onboarding", 15, True)])
+    flags = compute_ai_recommendations(df)
+    assert len(flags) == 1
+    assert flags[0]["severity"] == "Critical"
+    assert flags[0]["flag_type"] == "post_sale_stall"
