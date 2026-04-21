@@ -2,9 +2,14 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 
+_DATA_DIR = Path(__file__).parent.parent / "data"
+
 
 @st.cache_data
-def load_data() -> pd.DataFrame:
-    path = Path(__file__).parent.parent / "data" / "crypto_programs.csv"
-    df = pd.read_csv(path, parse_dates=["month"])
-    return df
+def load_pipeline_monthly() -> pd.DataFrame:
+    return pd.read_csv(_DATA_DIR / "pipeline_monthly.csv", parse_dates=["month"])
+
+
+@st.cache_data
+def load_deals() -> pd.DataFrame:
+    return pd.read_csv(_DATA_DIR / "deals.csv")
