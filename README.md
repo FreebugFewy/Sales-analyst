@@ -1,64 +1,68 @@
-# Visa Crypto Portfolio Analyst
+# Visa NA VAS — Sales Enablement AI Solutions Analyst
 
-This project models the operational analytics work performed by a Business Analyst embedded in Visa's Growth Products & Partnerships team. It synthesises 480 rows of synthetic transaction data across 4 crypto programs, 5 regions, and 24 months to surface portfolio health, OKR attainment, partner adoption trends, and settlement efficiency. The centrepiece is a Program Health Scorecard and automated Risk Flag Engine -- the kind of tools a Chief of Staff uses to inform executive decisions and anticipate issues before they escalate.
+This project models the analytical and AI automation work performed by a Sales Enablement
+AI Solutions Analyst on Visa's North America Visa Acceptance Solutions (NA VAS) team.
+It synthesises two datasets — 288 rows of monthly pipeline data across 4 VAS products
+and 4 acquirer segments, and 200 individual deal snapshots — to demonstrate pipeline
+health tracking, velocity analysis, post-sale time-to-revenue monitoring, and an
+automated AI deal recommendation engine.
 
 ## Live Dashboard
 
-**URL:** https://crypto-analyst-jzvweqygfjactyyhdbv8bo.streamlit.app/
+**URL:** *(add Streamlit Community Cloud URL after deployment)*
 
 ## Job Posting
 
-- **Role:** Business Analyst, Operations & Strategy
-- **Company:** Visa Inc. -- Growth Products & Partnerships
-
-This project directly demonstrates the role's core success criteria: clean and trusted portfolio data, exec-ready synthesis, and tools that anticipate issues rather than react to them.
+- **Role:** Sales Enablement AI Solutions Analyst
+- **Company:** Visa Inc. — NA VAS (North America Visa Acceptance Solutions)
 
 ## Tech Stack
 
 | Layer | Tool |
 |---|---|
-| Data | Synthesized CSV -- Python generator script |
+| Data | Two synthesized CSVs — Python generator script |
 | Data Processing | Pandas |
-| Scoring Model | Python pure functions (`compute_health_score`, `compute_risk_flags`) |
+| Scoring Model | Python pure functions (`compute_deal_health`, `compute_ai_recommendations`) |
 | Visualisation | Altair |
-| Dashboard | Streamlit (three-page multipage app) |
-| Testing | pytest (11 unit tests) |
+| Dashboard | Streamlit (four-page multipage app) |
+| Testing | pytest (15 unit tests) |
 | Deployment | Streamlit Community Cloud |
-
-## Pipeline Diagram
-
-```mermaid
-flowchart TD
-    CSV[("crypto_programs.csv\n480 rows")]
-
-    CSV -->|"@st.cache_data"| P1["1_portfolio_summary.py\n💳 Executive Summary\nKPI cards · Volume trend · Health Scorecard"]
-    CSV -->|"@st.cache_data"| P2["pages/2_program_deep_dive.py\n🔍 Program Deep-Dive"]
-    CSV -->|"@st.cache_data"| P3["pages/3_risk_recommendations.py\n⚠️ Risk & Recommendations"]
-
-    P1 --> HS["compute_health_score()\nutils/health_score.py\nWeighted OKR · Adoption · Growth score"]
-    P2 --> HS
-    P2 --> EFF["Settlement Efficiency Model\nParametric cost curve\nCrypto rail vs traditional"]
-    P3 --> RF["compute_risk_flags()\nutils/risk_flags.py\nOKR Miss · Adoption Decline · Volume Decline"]
-    RF --> FLAGS["Expandable flag rows\n+ Strategic Priorities"]
-```
 
 ## Dashboard Pages
 
-**Page 1 -- Portfolio Executive Summary:** Portfolio KPI cards (volume, OKR attainment, growth, partners), 12-month volume trend by program, and a colour-coded Program Health Scorecard ranking all four programs.
+**Page 1 — Executive Pipeline Summary:** Portfolio KPI cards (pipeline value, win rate,
+days to close, MoM growth), 12-month pipeline trend by VAS product, and a colour-coded
+Deal Health Scorecard ranking all four products.
 
-**Page 2 -- Program Deep-Dive:** Program selector with volume vs OKR target overlay, OKR attainment bar chart (colour-coded by status), partner adoption by region, and a Settlement Efficiency Model showing where the program sits on the crypto-rail vs traditional-rail cost curve.
+**Page 2 — Pipeline Velocity Model:** Product and segment filters, win rate over time by
+segment, average days-to-close comparison, and a centrepiece deal-size vs. win-rate
+scatter showing where to prioritise GTM effort.
 
-**Page 3 -- Risk & Recommendations:** Automated flag engine surfacing OKR misses, adoption declines, and volume declines with exec-ready one-line recommendations. Closes with a static Strategic Priorities section formatted as a QBR talking point.
+**Page 3 — Post-Sale Time-to-Revenue:** Post-sale stage funnel, average cycle time per
+stage with bottleneck flagging (red = exceeds threshold), and a box-plot distribution
+of days from Closed Won to first Live revenue by product.
+
+**Page 4 — AI Insight Engine:** Automated deal monitoring that surfaces stalled deals
+and generates exec-ready next-best-action recommendations. Severity-coded (Critical /
+Warning / Watch) with a Strategic Priorities QBR section.
 
 ## Key Insights
 
-**Portfolio health:** Visa x Coinbase Card leads on health score -- highest OKR attainment and partner adoption. Crypto B2B Partnerships trails, driven by a steep OKR stretch target (20% above base) and lower adoption maturity.
+**Pipeline health:** Tokenization Suite leads on deal health score driven by the highest
+average deal size and consistent MoM growth. ISOs show the highest win rate but smallest
+deal size — strong volume lever, limited revenue concentration.
 
-**Settlement efficiency:** USDC Settlement Rails and Crypto B2B Partnerships (avg transactions of $50K and $12K respectively) generate material cost savings vs traditional rails -- the settlement efficiency model shows savings of 0.10-0.13% of volume at current scale. Card programs (avg ~$400/txn) sit near the break-even point.
+**Velocity:** Tier 1 Banks take 3x longer to close than ISOs but carry 9x the deal value.
+GTM prioritisation should balance ISO volume velocity against Tier 1 revenue concentration
+based on quarterly pipeline targets.
 
-**Risk flags:** MEA lags across all programs on partner adoption (82-84%) and has begun missing OKR targets -- pointing to infrastructure gaps rather than product-market fit issues. LAC Crypto B2B shows consecutive adoption decline, flagged for outreach.
+**Time-to-revenue:** Certification is the longest post-sale stage across all products —
+the primary bottleneck between Closed Won and first revenue. A readiness checklist
+deployed at Intake is the highest-leverage intervention.
 
-**Recommendation:** Prioritise MEA partner enablement investment before Q3 and expand the LAC B2B partner pipeline to 8+ active partners to absorb single-partner volatility.
+**AI flags:** The recommendation engine surfaces Critical flags (post-sale stalls >14 days)
+and Warning flags (pre-sale stalls >21 days or Onboarding/Certification delays >10 days),
+automating the manual deal-review work that would otherwise require daily CRM triage.
 
 ## Setup & Reproduction
 
@@ -69,12 +73,12 @@ pip install streamlit altair pandas numpy pytest
 
 # Run the dashboard (from streamlit_app/)
 cd streamlit_app
-streamlit run 1_portfolio_summary.py
+streamlit run 1_pipeline_summary.py
 
 # Run tests (from project root)
 pytest
 
-# Regenerate dataset
+# Regenerate datasets
 cd streamlit_app
 python generate_data.py
 ```
@@ -83,19 +87,21 @@ python generate_data.py
 
     .
     ├── streamlit_app/
-    │   ├── 1_portfolio_summary.py        # Page 1: Executive Summary + Health Scorecard
+    │   ├── 1_pipeline_summary.py          # Page 1: Executive Pipeline Summary
     │   ├── pages/
-    │   │   ├── 2_program_deep_dive.py    # Page 2: Program selector + Efficiency Model
-    │   │   └── 3_risk_recommendations.py # Page 3: Risk flags + Strategic Priorities
+    │   │   ├── 2_pipeline_velocity.py     # Page 2: Velocity Model + segment scatter
+    │   │   ├── 3_time_to_revenue.py       # Page 3: Post-sale funnel + bottleneck flags
+    │   │   └── 4_ai_insight_engine.py     # Page 4: AI recommendations + QBR priorities
     │   ├── utils/
-    │   │   ├── data_loader.py            # Shared cached CSV loader
-    │   │   ├── health_score.py           # compute_health_score() pure function
-    │   │   └── risk_flags.py             # compute_risk_flags() pure function
+    │   │   ├── data_loader.py             # Cached loaders for both CSVs
+    │   │   ├── deal_health.py             # compute_deal_health() pure function
+    │   │   └── ai_recommendations.py      # compute_ai_recommendations() pure function
     │   ├── data/
-    │   │   └── crypto_programs.csv       # 480 rows synthetic dataset
-    │   └── generate_data.py              # Synthetic data generator
+    │   │   ├── pipeline_monthly.csv       # 288 rows monthly pipeline data
+    │   │   └── deals.csv                  # 200 rows deal-level snapshot
+    │   └── generate_data.py               # Synthetic data generator
     ├── tests/
-    │   ├── test_health_score.py          # 6 unit tests
-    │   └── test_risk_flags.py            # 5 unit tests
+    │   ├── test_deal_health.py            # 8 unit tests
+    │   └── test_ai_recommendations.py     # 7 unit tests
     ├── pytest.ini
     └── README.md
