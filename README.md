@@ -9,7 +9,7 @@ automated AI deal recommendation engine.
 
 ## Live Dashboard
 
-**URL:** *(add Streamlit Community Cloud URL after deployment)*
+**URL:** https://sales-analyst-hpecckbmvzzbhe6a5owuax.streamlit.app/
 
 ## Job Posting
 
