@@ -31,6 +31,8 @@ POST_SALE_STAGE_THRESHOLD = {"Intake": 5, "Onboarding": 10, "Certification": 14,
 def _generate_pipeline_monthly() -> pd.DataFrame:
     months = pd.date_range("2025-01", periods=18, freq="MS")
     rows = []
+    prev_values: dict[tuple[str, str], float] = {}
+
     for i, month in enumerate(months):
         for product in PRODUCTS:
             for segment in SEGMENTS:
@@ -47,8 +49,11 @@ def _generate_pipeline_monthly() -> pd.DataFrame:
                 avg_deal_size = BASE_DEAL_SIZE[segment] * mod * noise * trend
                 pipeline_value = deals_created * avg_deal_size * (1 - win_rate)
                 avg_days = float(np.clip(BASE_DAYS_TO_CLOSE[segment] * np.random.normal(1, 0.1), 10, 300))
-                prev_pipeline = pipeline_value * np.random.normal(0.97, 0.03)
-                mom_growth = (pipeline_value - prev_pipeline) / prev_pipeline if prev_pipeline > 0 else 0.0
+
+                key = (product, segment)
+                prior = prev_values.get(key)
+                mom_growth = (pipeline_value - prior) / prior if prior and prior > 0 else 0.0
+                prev_values[key] = pipeline_value
 
                 rows.append({
                     "month": month,
