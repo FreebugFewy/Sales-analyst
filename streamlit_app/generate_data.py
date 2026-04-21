@@ -1,118 +1,121 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 from pathlib import Path
 
-rng = np.random.default_rng(42)
+np.random.seed(42)
 
-PROGRAMS = [
-    "USDC Settlement Rails",
-    "Visa x Coinbase Card",
-    "Visa x Crypto.com Card",
-    "Crypto B2B Partnerships",
+PRODUCTS = [
+    "Tap-to-Phone",
+    "Tokenization Suite",
+    "Acceptance API",
+    "Visa Acceptance Console",
 ]
-REGIONS = ["NA", "EU", "AP", "LAC", "MEA"]
-REGION_WEIGHTS = {"NA": 0.40, "EU": 0.28, "AP": 0.20, "LAC": 0.07, "MEA": 0.05}
+SEGMENTS = ["Tier 1 Banks", "Regional Banks", "ISOs", "Fintechs"]
+PRE_SALE_STAGES = ["Prospecting", "Qualification", "Proposal", "Negotiation"]
+POST_SALE_STAGES = ["Intake", "Onboarding", "Certification", "Activation", "Live"]
 
-PROGRAM_CONFIG = {
-    "USDC Settlement Rails": {
-        "annual_volume_usd": 2_400_000_000,
-        "avg_txn_usd": 50_000,
-        "base_adoption_rate": 0.72,
-        "monthly_trend": 0.012,
-        "okr_stretch": 1.10,
-        "max_partners": {"NA": 28, "EU": 20, "AP": 15, "LAC": 6, "MEA": 4},
-    },
-    "Visa x Coinbase Card": {
-        "annual_volume_usd": 1_440_000_000,
-        "avg_txn_usd": 450,
-        "base_adoption_rate": 0.85,
-        "monthly_trend": 0.018,
-        "okr_stretch": 1.12,
-        "max_partners": {"NA": 45, "EU": 32, "AP": 25, "LAC": 10, "MEA": 5},
-    },
-    "Visa x Crypto.com Card": {
-        "annual_volume_usd": 1_080_000_000,
-        "avg_txn_usd": 380,
-        "base_adoption_rate": 0.78,
-        "monthly_trend": 0.010,
-        "okr_stretch": 1.15,
-        "max_partners": {"NA": 35, "EU": 25, "AP": 30, "LAC": 8, "MEA": 6},
-    },
-    "Crypto B2B Partnerships": {
-        "annual_volume_usd": 600_000_000,
-        "avg_txn_usd": 12_000,
-        "base_adoption_rate": 0.58,
-        "monthly_trend": 0.022,
-        "okr_stretch": 1.20,
-        "max_partners": {"NA": 15, "EU": 12, "AP": 10, "LAC": 4, "MEA": 3},
-    },
+ACQUIRER_NAMES = {
+    "Tier 1 Banks": ["JPMorgan Chase", "Bank of America", "Wells Fargo", "Citibank", "US Bancorp"],
+    "Regional Banks": ["First National Bank", "Pacific Premier", "Glacier Bancorp", "Heartland Financial", "Renasant Bank"],
+    "ISOs": ["Priority Payment Systems", "Paysafe", "EVO Payments", "Cayan", "Shift4"],
+    "Fintechs": ["Stripe", "Square", "Adyen", "Marqeta", "Checkout.com"],
 }
 
+BASE_WIN_RATE = {"Tier 1 Banks": 0.35, "Regional Banks": 0.42, "ISOs": 0.55, "Fintechs": 0.48}
+BASE_DEAL_SIZE = {"Tier 1 Banks": 850_000, "Regional Banks": 420_000, "ISOs": 95_000, "Fintechs": 210_000}
+BASE_DAYS_TO_CLOSE = {"Tier 1 Banks": 120, "Regional Banks": 90, "ISOs": 45, "Fintechs": 75}
+PRODUCT_MODIFIER = {"Tap-to-Phone": 1.0, "Tokenization Suite": 1.2, "Acceptance API": 0.9, "Visa Acceptance Console": 1.1}
+POST_SALE_STAGE_THRESHOLD = {"Intake": 5, "Onboarding": 10, "Certification": 14, "Activation": 7, "Live": 999}
 
-def generate():
-    months = pd.date_range("2024-01-01", "2025-12-01", freq="MS")
+
+def _generate_pipeline_monthly() -> pd.DataFrame:
+    months = pd.date_range("2025-01", periods=18, freq="MS")
     rows = []
+    for i, month in enumerate(months):
+        for product in PRODUCTS:
+            for segment in SEGMENTS:
+                mod = PRODUCT_MODIFIER[product]
+                trend = 1 + 0.01 * i
+                noise = np.random.normal(1, 0.05)
 
-    for program, config in PROGRAM_CONFIG.items():
-        for region in REGIONS:
-            weight = REGION_WEIGHTS[region]
-            base_monthly_volume = config["annual_volume_usd"] * weight / 12
-            base_adoption = config["base_adoption_rate"]
-            max_partners = config["max_partners"][region]
-
-            # Baked-in risk scenarios for Page 3 to surface
-            mea_okr_miss = region == "MEA"
-            lac_b2b_decline = program == "Crypto B2B Partnerships" and region == "LAC"
-
-            prev_volume = base_monthly_volume
-            prev_adoption = base_adoption
-
-            for i, month in enumerate(months):
-                trend_factor = 1 + config["monthly_trend"]
-                noise = float(rng.normal(0, 0.03))
-
-                # MEA: strong volume suppression in last 3 months to trigger OKR miss flag
-                if mea_okr_miss and i >= 21:
-                    noise -= 0.14
-
-                volume = prev_volume * trend_factor * (1 + noise)
-                volume = max(volume, base_monthly_volume * 0.1)
-
-                okr_target = base_monthly_volume * (trend_factor ** i) * config["okr_stretch"]
-                okr_attainment = float(np.clip(volume / okr_target, 0.30, 1.25))
-
-                adoption_noise = float(rng.normal(0, 0.018))
-                # LAC B2B: steady adoption decline in last 3 months
-                if lac_b2b_decline and i >= 21:
-                    adoption_noise -= 0.035
-                adoption = float(np.clip(prev_adoption + adoption_noise, 0.20, 0.98))
-
-                partners = max(1, int(max_partners * adoption * (0.85 + float(rng.random()) * 0.15)))
-                txn_count = max(1, int(volume / config["avg_txn_usd"]))
-                mom_growth = float((volume / prev_volume) - 1) if prev_volume > 0 else 0.0
+                deals_created = max(1, int(np.random.poisson(8) * mod))
+                win_rate = float(np.clip(
+                    BASE_WIN_RATE[segment] * noise + 0.004 * i * np.random.choice([-1, 1]),
+                    0.1, 0.9,
+                ))
+                deals_won = int(deals_created * win_rate)
+                avg_deal_size = BASE_DEAL_SIZE[segment] * mod * noise * trend
+                pipeline_value = deals_created * avg_deal_size * (1 - win_rate)
+                avg_days = float(np.clip(BASE_DAYS_TO_CLOSE[segment] * np.random.normal(1, 0.1), 10, 300))
+                prev_pipeline = pipeline_value * np.random.normal(0.97, 0.03)
+                mom_growth = (pipeline_value - prev_pipeline) / prev_pipeline if prev_pipeline > 0 else 0.0
 
                 rows.append({
                     "month": month,
-                    "program": program,
-                    "region": region,
-                    "volume_usd": round(volume, 2),
-                    "transaction_count": txn_count,
-                    "active_partners": partners,
-                    "okr_attainment": round(okr_attainment, 4),
+                    "product": product,
+                    "acquirer_segment": segment,
+                    "deals_created": deals_created,
+                    "deals_won": deals_won,
+                    "pipeline_value_usd": round(pipeline_value, 2),
+                    "avg_deal_size_usd": round(avg_deal_size, 2),
+                    "win_rate": round(win_rate, 4),
+                    "avg_days_to_close": round(avg_days, 1),
                     "mom_growth": round(mom_growth, 4),
-                    "partner_adoption_rate": round(adoption, 4),
                 })
+    return pd.DataFrame(rows)
 
-                prev_volume = volume
-                prev_adoption = adoption
 
-    df = pd.DataFrame(rows)
-    out_path = Path(__file__).parent / "data" / "crypto_programs.csv"
-    out_path.parent.mkdir(exist_ok=True)
-    df.to_csv(out_path, index=False)
-    print(f"Generated {len(df)} rows -> {out_path}")
-    return df
+def _generate_deals(n: int = 200) -> pd.DataFrame:
+    rows = []
+    for i in range(1, n + 1):
+        product = np.random.choice(PRODUCTS)
+        segment = np.random.choice(SEGMENTS)
+        acquirer_name = np.random.choice(ACQUIRER_NAMES[segment])
+        is_post_sale = np.random.random() < 0.4
+
+        if is_post_sale:
+            stage = str(np.random.choice(
+                POST_SALE_STAGES, p=[0.10, 0.25, 0.35, 0.20, 0.10]
+            ))
+            threshold = POST_SALE_STAGE_THRESHOLD[stage]
+            if np.random.random() < 0.35:
+                days_in_stage = int(np.random.uniform(threshold + 1, threshold * 2.5))
+            else:
+                days_in_stage = int(np.random.uniform(1, threshold))
+        else:
+            stage = str(np.random.choice(PRE_SALE_STAGES))
+            if np.random.random() < 0.30:
+                days_in_stage = int(np.random.uniform(22, 45))
+            else:
+                days_in_stage = int(np.random.uniform(1, 21))
+
+        total_days = int(np.random.uniform(days_in_stage, days_in_stage * 2))
+        deal_value = max(10_000.0, BASE_DEAL_SIZE[segment] * float(np.random.normal(1, 0.2)))
+        days_to_first_revenue = int(np.random.uniform(30, 120)) if stage == "Live" else None
+
+        rows.append({
+            "deal_id": f"VAS-{i:04d}",
+            "product": product,
+            "acquirer_segment": segment,
+            "acquirer_name": acquirer_name,
+            "deal_value_usd": round(deal_value, 2),
+            "stage": stage,
+            "days_in_current_stage": days_in_stage,
+            "total_days_in_flight": total_days,
+            "is_post_sale": is_post_sale,
+            "days_to_first_revenue": days_to_first_revenue,
+        })
+    return pd.DataFrame(rows)
 
 
 if __name__ == "__main__":
-    generate()
+    out = Path(__file__).parent / "data"
+    out.mkdir(exist_ok=True)
+
+    pipeline_df = _generate_pipeline_monthly()
+    pipeline_df.to_csv(out / "pipeline_monthly.csv", index=False)
+    print(f"pipeline_monthly.csv: {len(pipeline_df)} rows")
+
+    deals_df = _generate_deals()
+    deals_df.to_csv(out / "deals.csv", index=False)
+    print(f"deals.csv: {len(deals_df)} rows")
