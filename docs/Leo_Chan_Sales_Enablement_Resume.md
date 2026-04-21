@@ -1,6 +1,6 @@
 # LEO KAI CHAN
 
-San Carlos, CA | 650-471-9446 | Leo.Chan9904@gmail.com | [LinkedIn](#) | [GitHub](#)
+San Carlos, CA | 650-471-9446 | Leo.Chan9904@gmail.com | [LinkedIn](https://www.linkedin.com/in/leo-chan-9a79832b2/) | [GitHub](https://github.com/FreebugFewy)
 
 ---
 
@@ -38,7 +38,7 @@ Graduating senior in Information Systems & Business Analytics (GPA 3.4) with two
 
 ## FEATURED PROJECT
 
-**Visa NA VAS — Sales Enablement AI Solutions Analyst Dashboard** &nbsp;&nbsp; [GitHub](#) | [Live Dashboard](https://sales-analyst-hpecckbmvzzbhe6a5owuax.streamlit.app/)
+**Visa NA VAS — Sales Enablement AI Solutions Analyst Dashboard** &nbsp;&nbsp; [GitHub](https://github.com/FreebugFewy/Sales-analyst) | [Live Dashboard](https://sales-analyst-hpecckbmvzzbhe6a5owuax.streamlit.app/)
 
 Built a 4-page Streamlit analytics dashboard modeled on the Sales Enablement AI Solutions Analyst role at Visa's NA VAS team — covering Tap-to-Phone, Tokenization Suite, Acceptance API, and Visa Acceptance Console across Tier 1 Banks, Regional Banks, ISOs, and Fintechs.
 
